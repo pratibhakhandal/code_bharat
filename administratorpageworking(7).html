@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order of the Day</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 1000px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .delivered-btn {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+
+        .delivered-btn:hover {
+            background-color: #218838;
+        }
+
+        .token-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        #assign-delivery-boys {
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Order of the Day</h2>
+
+    <!-- Orders Section -->
+    <div id="orders-section">
+        <h3>Breakfast Orders</h3>
+        <table id="breakfast-orders">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Meal Type</th>
+                    <th>Token Color</th>
+                    <th>Room Number</th>
+                    <th>Assigned Delivery Boy</th>
+                    <th>Delivery Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Breakfast Orders -->
+            </tbody>
+        </table>
+
+        <h3>Lunch Orders</h3>
+        <table id="lunch-orders">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Meal Type</th>
+                    <th>Token Color</th>
+                    <th>Room Number</th>
+                    <th>Assigned Delivery Boy</th>
+                    <th>Delivery Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Lunch Orders -->
+            </tbody>
+        </table>
+
+        <h3>Dinner Orders</h3>
+        <table id="dinner-orders">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Meal Type</th>
+                    <th>Token Color</th>
+                    <th>Room Number</th>
+                    <th>Assigned Delivery Boy</th>
+                    <th>Delivery Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dinner Orders -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Delivery Boy Assignment Section -->
+    <div id="delivery-boys-section">
+        <button id="assign-delivery-boys">Assign Orders to Delivery Boys</button>
+    </div>
+
+    <div id="error-message" class="error-message"></div>
+
+</div>
+
+<script>
+    // Simulated Orders Data
+    const orders = [
+        { id: 1, mealType: 'Breakfast', tokenColor: 'Red', roomNo: 101, status: 'Pending', deliveryBoy: '', deliveryTime: '7:30' },
+        { id: 2, mealType: 'Lunch', tokenColor: 'Green', roomNo: 102, status: 'Pending', deliveryBoy: '', deliveryTime: '12:10' },
+        { id: 3, mealType: 'Dinner', tokenColor: 'Purple', roomNo: 103, status: 'Pending', deliveryBoy: '', deliveryTime: '6:20' },
+        { id: 4, mealType: 'Breakfast', tokenColor: 'Pink', roomNo: 104, status: 'Pending', deliveryBoy: '', deliveryTime: '7:50' },
+        { id: 5, mealType: 'Lunch', tokenColor: 'Orange', roomNo: 105, status: 'Pending', deliveryBoy: '', deliveryTime: '12:35' },
+        { id: 6, mealType: 'Dinner', tokenColor: 'Yellow', roomNo: 106, status: 'Pending', deliveryBoy: '', deliveryTime: '6:50' },
+        { id: 7, mealType: 'Lunch', tokenColor: 'Blue', roomNo: 107, status: 'Pending', deliveryBoy: '', deliveryTime: '12:30' },
+        { id: 8, mealType: 'Dinner', tokenColor: 'Red', roomNo: 108, status: 'Pending', deliveryBoy: '', deliveryTime: '6:10' },
+        { id: 9, mealType: 'Breakfast', tokenColor: 'Green', roomNo: 109, status: 'Pending', deliveryBoy: '', deliveryTime: '7:15' },
+        { id: 10, mealType: 'Lunch', tokenColor: 'Purple', roomNo: 110, status: 'Pending', deliveryBoy: '', deliveryTime: '12:00' }
+    ];
+
+    const deliveryBoys = Array.from({ length: 10 }, (_, i) => ({ id: i + 1, assignedOrders: [] }));
+
+    // Function to get the color of the token as a background style
+    function getTokenColorStyle(color) {
+        const colorMapping = {
+            'Red': '#ff0000',
+            'Green': '#00ff00',
+            'Purple': '#800080',
+            'Pink': '#ff69b4',
+            'Orange': '#ffa500',
+            'Yellow': '#ffff00',
+            'Blue': '#0000ff'
+        };
+        return colorMapping[color] || '#000000'; // Default to black if no color found
+    }
+
+    // Display Orders in their respective Tables
+    function displayOrders() {
+        const breakfastTable = document.querySelector('#breakfast-orders tbody');
+        const lunchTable = document.querySelector('#lunch-orders tbody');
+        const dinnerTable = document.querySelector('#dinner-orders tbody');
+        
+        // Clear tables before populating
+        breakfastTable.innerHTML = '';
+        lunchTable.innerHTML = '';
+        dinnerTable.innerHTML = '';
+
+        orders.forEach(order => {
+            const tr = document.createElement('tr');
+            const tokenColorStyle = getTokenColorStyle(order.tokenColor); // Get color for token
+            tr.innerHTML = `
+                <td>${order.id}</td>
+                <td>${order.mealType}</td>
+                <td><span class="token-color" style="background-color: ${tokenColorStyle};"></span> ${order.tokenColor}</td>
+                <td>${order.roomNo}</td>
+                <td>${order.deliveryBoy || 'Not Assigned'}</td>
+                <td>${order.status}</td>
+                <td><button class="delivered-btn" onclick="markDelivered(${order.id})">Mark as Delivered</button></td>
+            `;
+
+            if (order.mealType === 'Breakfast') {
+                breakfastTable.appendChild(tr);
+            } else if (order.mealType === 'Lunch') {
+                lunchTable.appendChild(tr);
+            } else if (order.mealType === 'Dinner') {
+                dinnerTable.appendChild(tr);
+            }
+        });
+    }
+
+    // Function to assign orders to delivery boys
+    function assignOrdersToDeliveryBoys() {
+        const totalOrders = orders.length;
+        const ordersPerDeliveryBoy = Math.floor(totalOrders / 10);
+        let extraOrderIndex = totalOrders % 10;
+
+        let orderIndex = 0;
+        deliveryBoys.forEach(boy => {
+            const assignedOrders = [];
+
+            // Assign the regular number of orders
+            for (let i = 0; i < ordersPerDeliveryBoy; i++) {
+                assignedOrders.push(orders[orderIndex]);
+                orders[orderIndex].deliveryBoy = boy.id;
+                orderIndex++;
+            }
+
+            // If there is an extra order, give it to this delivery boy
+            if (extraOrderIndex > 0) {
+                assignedOrders.push(orders[orderIndex]);
+                orders[orderIndex].deliveryBoy = boy.id;
+                orderIndex++;
+                extraOrderIndex--;
+            }
+
+            boy.assignedOrders = assignedOrders;
+        });
+
+        // Display the orders after assignment
+        displayOrders();
+        document.getElementById("assign-delivery-boys").disabled = true; // Disable button after assigning
+    }
+
+    // Function to check if the delivery time is within the allowed window
+    function isDeliveryAllowed(mealType, deliveryTime) {
+        const [hour, minute] = deliveryTime.split(':').map(Number);
+
+        // Define the allowed time windows for each meal
+        const allowedTimes = {
+            'Breakfast': { start: 7, end: 7.666 }, // 7:00 to 7:40
+            'Lunch': { start: 12, end: 12.666 }, // 12:00 to 12:40
+            'Dinner': { start: 18, end: 18.666 } // 6:00 PM to 6:40 PM
+        };
+
+        const deliveryHour = hour + (minute / 60); // Convert delivery time to a decimal
+
+        return deliveryHour >= allowedTimes[mealType].start && deliveryHour <= allowedTimes[mealType].end;
+    }
+
+    // Mark the Order as Delivered
+    function markDelivered(orderId) {
+        const order = orders.find(o => o.id === orderId);
+        const currentTime = order.deliveryTime; // Use the order's time to check delivery window
+
+        if (isDeliveryAllowed(order.mealType, currentTime)) {
+            order.status = 'Delivered';
+            displayOrders();
+        } else {
+            document.getElementById('error-message').textContent = Delivery for Order ID ${orderId} is not allowed at this time.;
+        }
+    }
+
+    // Initialize the page
+    displayOrders();
+
+    // Event Listeners
+    document.getElementById("assign-delivery-boys").addEventListener("click", () => {
+        assignOrdersToDeliveryBoys();
+    });
+
+</script>
+
+</body>
+</html>

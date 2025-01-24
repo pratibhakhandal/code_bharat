@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+        .completed-message {
+            text-align: center;
+            font-size: 18px;
+            color: green;
+        }
+    </style>
+   
+    <script>
+    let timeout;
+
+    function showTable() {
+        const mealType = document.getElementById('mealType').value;
+        const tables = document.querySelectorAll('.meal-table');
+        tables.forEach(table => table.classList.add('hidden'));
+
+        const currentTime = new Date();
+        const deadlines = {
+            breakfast: new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), 7, 40, 0),
+            lunch: new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), 12, 40, 0),
+            dinner: new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), 18, 40, 0) // Dinner ends at 6:40 PM
+        };
+
+        const startTimes = {
+            dinner: new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), 17, 50, 0) // Dinner starts at 5:50 PM
+        };
+
+        if (mealType && isMealAvailable(mealType, currentTime, deadlines, startTimes)) {
+            document.getElementById(${mealType}Table).classList.remove('hidden');
+            enableSubmitCheck(mealType);
+            startTimer(mealType, deadlines);
+        } else {
+            alert(${mealType.charAt(0).toUpperCase() + mealType.slice(1)} time has already passed.);
+        }
+    }
+
+    function isMealAvailable(mealType, currentTime, deadlines, startTimes) {
+        // Check if the meal time is within the allowed range
+        if (mealType === 'dinner' && currentTime < startTimes[mealType]) {
+            return false;
+        }
+
+        if (currentTime > deadlines[mealType]) {
+            return false; // Time has passed for this meal
+        }
+
+        return true;
+    }
+
+    function enableSubmitCheck(mealType) {
+        const checkboxes = document.querySelectorAll(#${mealType}Table .delivered-checkbox);
+        const submitButton = document.getElementById('submitButton');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                submitButton.disabled = !allChecked;
+            });
+        });
+    }
+
+    function startTimer(mealType, deadlines) {
+        clearTimeout(timeout);
+        const currentTime = new Date();
+        const remainingTime = deadlines[mealType] - currentTime;
+
+        if (remainingTime > 0) {
+            timeout = setTimeout(() => submitOrders(mealType), remainingTime);
+        } else {
+            alert('The time for this meal has already passed.');
+        }
+    }
+
+    function submitOrders(mealType) {
+        clearTimeout(timeout);
+        document.getElementById('orderSection').classList.add('hidden');
+        document.getElementById('completedMessage').innerHTML = Task completed for ${mealType}! ✅;
+        setTimeout(function() {
+        window.location.href = 'tat.html'; // This will redirect to the tat.html file
+    }, 2000);
+    }
+</script>
+
+</head>
+<body>
+    <div class="container">
+        <h2>Today's Orders</h2>
+
+        <label for="mealType">Choose One:</label>
+        <select id="mealType" onchange="showTable()">
+            <option value="">-- Select Meal --</option>
+            <option value="breakfast">Breakfast (6:50 AM - 7:40 AM)</option>
+            <option value="lunch">Lunch (11:50 AM - 12:40 PM)</option>
+            <option value="dinner">Dinner (5:50 PM - 6:40 PM)</option>
+        </select>
+
+        <div id="orderSection">
+            <!-- Breakfast Table -->
+            <table id="breakfastTable" class="meal-table hidden">
+                <thead>
+                    <tr>
+                        <th>Token Color</th>
+                        <th>Item</th>
+                        <th>Room No.</th>
+                        <th>Delivered</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Green</td><td>Item 1</td><td>101</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Green</td><td>Item 2</td><td>102</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Red</td><td>Item 3</td><td>103</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Blue</td><td>Item 4</td><td>104</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Blue</td><td>Item 5</td><td>105</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Yellow</td><td>Item 6</td><td>106</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Orange</td><td>Item 7</td><td>107</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                </tbody>
+            </table>
+
+            <!-- Lunch Table -->
+            <table id="lunchTable" class="meal-table hidden">
+                <thead>
+                    <tr>
+                        <th>Token Color</th>
+                        <th>Item</th>
+                        <th>Room No.</th>
+                        <th>Delivered</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Green</td><td>Item 8</td><td>201</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Red</td><td>Item 9</td><td>202</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Blue</td><td>Item 10</td><td>203</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Yellow</td><td>Item 11</td><td>204</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Orange</td><td>Item 12</td><td>205</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Purple</td><td>Item 13</td><td>206</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>White</td><td>Item 14</td><td>207</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                </tbody>
+            </table>
+
+            <!-- Dinner Table -->
+            <table id="dinnerTable" class="meal-table hidden">
+                <thead>
+                    <tr>
+                        <th>Token Color</th>
+                        <th>Item</th>
+                        <th>Room No.</th>
+                        <th>Delivered</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Green</td><td>Item 15</td><td>301</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Red</td><td>Item 16</td><td>302</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Blue</td><td>Item 17</td><td>303</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Yellow</td><td>Item 18</td><td>304</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Orange</td><td>Item 19</td><td>305</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>Purple</td><td>Item 20</td><td>306</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                    <tr><td>White</td><td>Item 21</td><td>307</td><td><input type="checkbox" class="delivered-checkbox"></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Submit Button -->
+        <button id="submitButton" disabled onclick="submitOrders(document.getElementById('mealType').value)">Submit Orders</button>
+
+        <!-- Completion Message -->
+        <div id="completedMessage" class="completed-message"></div>
+    </div>
+</body>
+</html>

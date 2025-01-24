@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      width: 50%;
+      margin: auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .feedback-message {
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .rating {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .rating label {
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0 5px;
+      color: #ccc;
+    }
+
+    .rating input {
+      display: none;
+    }
+
+    .rating input:checked ~ label {
+      color: gold;
+    }
+
+    .suggestion {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      resize: none;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #28a745;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 4px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .thank-you-message {
+      font-size: 18px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .thank-you-message span {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="title">Feedback Page</div>
+    
+    <div class="feedback-message">
+      <p>Your food has been delivered within 30 minutes 😊</p>
+    </div>
+
+    <div class="rating">
+      <p>Rate your experience:</p>
+      <input type="radio" id="star1" name="rating" value="1">
+      <label for="star1">★</label>
+      <input type="radio" id="star2" name="rating" value="2">
+      <label for="star2">★</label>
+      <input type="radio" id="star3" name="rating" value="3">
+      <label for="star3">★</label>
+      <input type="radio" id="star4" name="rating" value="4">
+      <label for="star4">★</label>
+      <input type="radio" id="star5" name="rating" value="5">
+      <label for="star5">★</label>
+    </div>
+
+    <div class="suggestion">
+      <p>Is there anything you want to suggest that will help us to improve?</p>
+      <textarea id="suggestionText" placeholder="Enter your suggestions here..."></textarea>
+      <button onclick="submitFeedback()">Submit Feedback</button>
+    </div>
+
+    <div class="thank-you-message" id="thankYouMessage"></div>
+  </div>
+
+  <script>
+    // Add event listeners to all radio buttons
+    const stars = document.querySelectorAll('input[name="rating"]');
+    stars.forEach(star => {
+      star.addEventListener('click', function() {
+        const rating = this.value;
+        updateStars(rating); // Update the stars when a radio button is clicked
+      });
+    });
+
+    // Update the star colors based on the selected rating
+    function updateStars(rating) {
+      for (let i = 0; i < stars.length; i++) {
+        const star = stars[i];
+        const label = star.nextElementSibling;
+
+        // If the star's value is less than or equal to the selected rating, make it gold
+        if (star.value <= rating) {
+          label.style.color = 'gold';
+        } else {
+          label.style.color = '#ccc';
+        }
+      }
+    }
+
+    function submitFeedback() {
+      const suggestion = document.getElementById('suggestionText').value;
+      const thankYouMessage = document.getElementById('thankYouMessage');
+
+      // Clear the suggestion box after submission
+      document.getElementById('suggestionText').value = '';
+
+      // Display the thank you message without the suggestion
+      thankYouMessage.innerHTML = `
+        <p>Thank you for giving us a chance to serve you, see you soon 🤗</p>
+      `;
+    }
+  </script>
+
+</body>
+</html>

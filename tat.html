@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Delivery Simulation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+    }
+    .notification {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 5px;
+      font-size: 16px;
+      display: none;
+    }
+    #startButton {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    #startButton:disabled {
+      background-color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Food Delivery Simulation</h1>
+
+  <button id="startButton" onclick="startDelivery()" disabled>Start Delivery</button>
+
+  <div class="status">
+    <h3>Delivery Status</h3>
+    <p id="statusText">Your food is being prepared...</p>
+  </div>
+
+  <div class="notification" id="notification"></div>
+
+  <script>
+    let deliveryStarted = false;
+    let deliveryTimeLimit = 30 * 60 * 1000; // 30 minutes in milliseconds
+    let deliveryTimer;
+
+    // Function to get current time in IST (Indian Standard Time)
+    function getISTTime() {
+      const now = new Date();
+      const timeZoneOffset = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30
+      const ISTDate = new Date(now.getTime() + timeZoneOffset); // Adjust current time to IST
+      return ISTDate;
+    }
+
+    // Function to check if the current time is within any of the allowed delivery windows
+    function isWithinDeliveryWindow() {
+      const now = getISTTime();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+
+      console.log(Current time in IST: ${hours}:${minutes}); // Debugging log
+
+      // Define time ranges: [start time, end time] in minutes, with associated meal types
+      const timeWindows = [
+        { start: { hours: 6, minutes: 50 }, end: { hours: 7, minutes: 40 }, meal: "Breakfast" }, // 6:50 AM - 7:40 AM
+        { start: { hours: 11, minutes: 50 }, end: { hours: 12, minutes: 40 }, meal: "Lunch" }, // 11:50 AM - 12:40 PM
+        { start: { hours: 17, minutes: 50 }, end: { hours: 18, minutes: 40 }, meal: "Dinner" }  // 5:50 PM - 6:40 PM
+      ];
+
+      for (let window of timeWindows) {
+        const startMinutes = window.start.hours * 60 + window.start.minutes;
+        const endMinutes = window.end.hours * 60 + window.end.minutes;
+        const currentMinutes = hours * 60 + minutes;
+
+        console.log(Checking window: ${window.meal} - Start: ${startMinutes} | End: ${endMinutes} | Current: ${currentMinutes}); // Debugging log
+
+        // Check if current time is within the window (including end time)
+        if (currentMinutes >= startMinutes && currentMinutes <= endMinutes) {
+          return { isWithin: true, meal: window.meal };
+        }
+      }
+
+      return { isWithin: false, meal: "" };
+    }
+
+    // Function to update the button's state based on the time window
+    function updateButtonState() {
+      const button = document.getElementById('startButton');
+      const { isWithin, meal } = isWithinDeliveryWindow();
+
+      if (isWithin) {
+        button.disabled = false;
+        button.innerHTML = Start Delivery (Meal: ${meal});
+        showNotification(You can now deliver your ${meal}.);
+      } else {
+        button.disabled = true;
+        button.innerHTML = Start Delivery (Not in meal time);
+        showNotification("Delivery can only be done during the following times: 6:50 AM - 7:40 AM (Breakfast), 11:50 AM - 12:40 PM (Lunch), 5:50 PM - 6:40 PM (Dinner).");
+      }
+    }
+
+    // Function to show a message when delivery is about to start
+    function showNotification(message) {
+      let notificationElement = document.getElementById('notification');
+      notificationElement.style.display = 'block';
+      notificationElement.innerHTML = message;
+
+      // Automatically hide notification after 5 seconds
+      setTimeout(function() {
+        notificationElement.style.display = 'none';
+      }, 5000);
+    }
+
+    // Function to start the delivery and simulate status updates
+    function startDelivery() {
+      document.getElementById('startButton').disabled = true;
+      document.getElementById('statusText').innerHTML = "Your food is out for delivery!";
+      
+      // Show notification when delivery starts
+      showNotification("Your food is out for delivery and will be with you soon!");
+
+      // Set a timer to show delivery status after 30 minutes
+      deliveryTimer = setTimeout(function() {
+        markDelivered();
+      }, deliveryTimeLimit);
+    }
+
+    // Function to mark delivery as completed
+    function markDelivered() {
+      document.getElementById('statusText').innerHTML = "Your food has been delivered!";
+      
+      // Show the delivery completed notification
+      showNotification("Your food has been delivered in 30 minutes!");
+      
+      // Optionally, re-enable the button for a new round of delivery
+      updateButtonState();
+    }
+
+    // Function to schedule the next delivery window and check periodically
+    function scheduleNextWindowCheck() {
+      // Check the current time and enable/disable the button accordingly
+      updateButtonState();
+      
+      // Check every minute if the time has changed
+      setInterval(updateButtonState, 60000);
+    }
+
+    // Start checking the times when the page loads
+    window.onload = function() {
+      scheduleNextWindowCheck();
+    };
+  </script>
+
+</body>
+</html>

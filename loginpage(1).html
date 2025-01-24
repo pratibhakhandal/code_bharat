@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .otp-message {
+            color: green;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .role-selection {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .role-selection button {
+            width: 30%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .role-selection button:hover {
+            background-color: #218838;
+        }
+        .login-form {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <div class="role-selection">
+            <button onclick="showLoginForm('patient')">Login as Patient</button>
+            <button onclick="showLoginForm('administrator')">Login as Administrator</button>
+            <button onclick="showLoginForm('delivery')">Login as Delivery Partner</button>
+        </div>
+
+        <!-- Patient Login Form -->
+        <div class="login-form" id="patient-form">
+            <form onsubmit="return validateForm()">
+                <label for="patientName">Patient Name:</label>
+                <input type="text" id="patientName" name="patientName" placeholder="Enter your name" required>
+
+                <label for="patientPhoneNumber">Phone Number:</label>
+                <input type="text" id="patientPhoneNumber" name="patientPhoneNumber" placeholder="Enter your registered phone number" required>
+                <button type="button" onclick="sendOtp('patient')">Send OTP</button>
+
+                <label for="patientRegistrationId">Registration ID:</label>
+                <input type="text" id="patientRegistrationId" name="patientRegistrationId" placeholder="Auto-generated ID" readonly value="12345678">
+
+                <label for="patientOtp">OTP:</label>
+                <input type="number" id="patientOtp" name="patientOtp" placeholder="Enter OTP sent to your phone" required>
+
+                <!--<button type="submit">Login</button>-->
+                <button type="button" onclick="window.location.href='language(2).html';">Login</button>
+            </form>
+            <div class="otp-message" id="patientOtpMessage"></div>
+        </div>
+
+        <!-- Administrator Login Form -->
+        <div class="login-form" id="administrator-form">
+            <form onsubmit="return validateForm()">
+                <label for="adminName">Administrator Name:</label>
+                <input type="text" id="adminName" name="adminName" placeholder="Enter your name" required>
+
+                <label for="adminPhoneNumber">Phone Number:</label>
+                <input type="text" id="adminPhoneNumber" name="adminPhoneNumber" placeholder="Enter your registered phone number" required>
+                <button type="button" onclick="sendOtp('administrator')">Send OTP</button>
+
+                <label for="adminId">Administrator ID:</label>
+                <input type="text" id="adminId" name="adminId" placeholder="Enter your ID" required>
+
+                <label for="adminOtp">OTP:</label>
+                <input type="number" id="adminOtp" name="adminOtp" placeholder="Enter OTP sent to your phone" required>
+
+                <button type="button" onclick="window.location.href='administratorpageworking(7).html';">Login</button>
+            </form>
+            <div class="otp-message" id="adminOtpMessage"></div>
+        </div>
+
+        <!-- Delivery Partner Login Form -->
+        <div class="login-form" id="delivery-form">
+            <form onsubmit="return validateForm()">
+                <label for="deliveryName">Delivery Partner Name:</label>
+                <input type="text" id="deliveryName" name="deliveryName" placeholder="Enter your name" required>
+
+                <label for="deliveryPhoneNumber">Phone Number:</label>
+                <input type="text" id="deliveryPhoneNumber" name="deliveryPhoneNumber" placeholder="Enter your registered phone number" required>
+                <button type="button" onclick="sendOtp('delivery')">Send OTP</button>
+
+                <label for="deliveryId">Delivery Partner ID:</label>
+                <input type="text" id="deliveryId" name="deliveryId" placeholder="Enter your ID" required>
+
+                <label for="deliveryOtp">OTP:</label>
+                <input type="number" id="deliveryOtp" name="deliveryOtp" placeholder="Enter OTP sent to your phone" required>
+
+                <!--<button type="s    <a href="language(2).html"><button type="submit">Login</button> </a>ubmit">Login</button>-->
+                <button type="button" onclick="window.location.href='deliverypartner(6).html';">Login</button>
+            </form>
+            <div class="otp-message" id="deliveryOtpMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        function showLoginForm(role) {
+            // Hide all forms
+            document.getElementById('patient-form').style.display = 'none';
+            document.getElementById('administrator-form').style.display = 'none';
+            document.getElementById('delivery-form').style.display = 'none';
+            
+            // Show the selected form
+            if (role === 'patient') {
+                document.getElementById('patient-form').style.display = 'block';
+            } else if (role === 'administrator') {
+                document.getElementById('administrator-form').style.display = 'block';
+            } else if (role === 'delivery') {
+                document.getElementById('delivery-form').style.display = 'block';
+            }
+        }
+
+        function sendOtp(role) {
+            // This function simulates OTP sending after mobile number input
+            if (role === 'patient') {
+                document.getElementById('patientOtpMessage').innerText = 'OTP has been sent to your registered phone number.';
+            } else if (role === 'administrator') {
+                document.getElementById('adminOtpMessage').innerText = 'OTP has been sent to your registered phone number.';
+            } else if (role === 'delivery') {
+                document.getElementById('deliveryOtpMessage').innerText = 'OTP has been sent to your registered phone number.';
+            }
+        }
+
+        function validateForm() {
+            // Redirect to language selection page
+            window.location.href = 'nextpage.html';
+            return false;  
+        }// Prevent form submission and reload
+    </script>
+</body>
+</html>

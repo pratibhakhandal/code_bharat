@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthy Food Ordering</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .account-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .main-content {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .welcome-text {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .menu {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .menu-item {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: white;
+            width: 200px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .menu-item h3 {
+            margin: 10px 0;
+            font-size: 20px;
+        }
+
+        .menu-item p {
+            margin: 5px 0;
+            color: gray;
+        }
+
+        .menu-item.selected {
+            background-color: #f0f8ff;
+            border-color: #007bff;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+        }
+
+        .next-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            opacity: 0.5;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .next-button.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .next-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Account Modal Style */
+        .account-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .account-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            overflow-y: auto;
+        }
+
+        .account-modal .close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .account-modal h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .faq-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .faq-list li {
+            margin-bottom: 15px;
+        }
+
+        .faq-list li h4 {
+            margin: 0;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        .faq-answer {
+            display: none;
+            margin-top: 5px;
+            color: gray;
+        }
+
+        .terms {
+            margin-top: 20px;
+        }
+
+        .logout-button {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+
+        .notification-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .notification-toggle span {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="user-info">
+            <span id="user-name">User</span>
+            <span id="hospital-location">MGH, Jaipur</span>
+        </div>
+        <h1>पोषणReady</h1>
+        <span class="account-icon" onclick="openAccountModal()">👤</span>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2>Promotions & News</h2>
+        <p>Stay healthy with our balanced meals!</p>
+        <p class="welcome-text">Welcome, <span id="username">User</span>. Let's get you some healthy food!</p>
+
+        <!-- Meal Options -->
+        <div class="menu">
+            <div class="menu-item" id="breakfast" onclick="selectMeal('breakfast')">
+                <img src="https://static.vecteezy.com/system/resources/previews/012/649/473/original/south-indian-food-idly-with-coconut-chutney-and-sambar-served-on-plate-with-banana-leaf-file-vector.jpg" alt="Breakfast">
+                <h3>Breakfast</h3>
+                <p>7:00 AM - 7:30 AM</p>
+                <p>Price: ₹40</p>
+                <p><strong>Handling Charge: ₹5</strong></p>
+                <p><strong>Total: ₹45</strong></p>
+                <p id="breakfast-status"></p>
+            </div>
+            <div class="menu-item" id="lunch" onclick="selectMeal('lunch')">
+                <img src="https://th.bing.com/th/id/OIP.U-95AejGB6ao8dpnYgRJKQHaEd?w=280&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7" alt="Lunch">
+                <h3>Lunch</h3>
+                <p>12:00 PM - 12:30 PM</p>
+                <p>Price: ₹80</p>
+                <p><strong>Handling Charge: ₹5</strong></p>
+                <p><strong>Total: ₹85</strong></p>
+                <p id="lunch-status"></p>
+            </div>
+            <div class="menu-item" id="dinner" onclick="selectMeal('dinner')">
+                <img src="https://shreekrishnatiffinservice.in/assets/images/abstract.png" alt="Dinner">
+                <h3>Dinner</h3>
+                <p>6:00 PM - 6:30 PM</p>
+                <p>Price: ₹80</p>
+                <p><strong>Handling Charge: ₹5</strong></p>
+                <p><strong>Total: ₹85</strong></p>
+                <p id="dinner-status"></p>
+            </div>
+        </div>
+
+        <!-- Next Button -->
+        <button class="next-button" id="next-button" onclick="nextStep()">Next</button>
+    </div>
+
+    <!-- Account Modal -->
+    <div class="account-modal" id="account-modal">
+        <div class="account-modal-content">
+            <span class="close" onclick="closeAccountModal()">&times;</span>
+            <h3>My Account</h3>
+
+            <!-- Notification Toggle -->
+            <div class="notification-toggle">
+                <span>Enable Notifications</span>
+                <input type="checkbox" id="notifications">
+            </div>
+
+            <div class="account-section">
+                <h4>My Profile</h4>
+                <p><strong>Name:</strong> John Doe</p>
+                <p><strong>Phone Number:</strong> +91 9876543210</p>
+                <p><strong>Hospital Name:</strong> MGH, Jaipur</p>
+                <p><strong>Registration ID:</strong> 12345678</p>
+            </div>
+
+            <button class="logout-button" onclick="logout()">Logout</button>
+
+            <h4>FAQ</h4>
+            <ul class="faq-list">
+                <li>
+                    <h4 onclick="toggleFaq(this)">How do I create an account?</h4>
+                    <p class="faq-answer">You can create an account by entering your hospital registration number, name, and a valid phone number. Follow the on-screen prompts to complete the registration.</p>
+                </li>
+                <li>
+                    <h4 onclick="toggleFaq(this)">What should I do if I can’t log in to my account?</h4>
+                    <p class="faq-answer">Ensure you’re using the correct hospital registration number and your phone number. If you still can’t log in, contact support for assistance.</p>
+                </li>
+                <li>
+                    <h4 onclick="toggleFaq(this)">How do I register for meal delivery?</h4>
+                    <p class="faq-answer">You can select meal options for breakfast, lunch, or dinner according to your specific diet (e.g., diabetic, liquid diet, etc.) and then select meal tokens based on your preferences to look for menu options.</p>
+                </li>
+                <li>
+                    <h4 onclick="toggleFaq(this)">What if you think that the quality of the meal is compromised?</h4>
+                    <p class="faq-answer">Attach valid images with your names written on the plate cover. Provide reasons for dissatisfaction in the dialog box.</p>
+                </li>
+                <li>
+                    <h4 onclick="toggleFaq(this)">What if my meal is not according to my preference?</h4>
+                    <p class="faq-answer">We will check what you ordered versus what you received and resolve with refund or replacement within one hour.</p>
+                </li>
+                <li>
+                    <h4 onclick="toggleFaq(this)">What if my order was not delivered on time?</h4>
+                    <p class="faq-answer">You will get a full refund, or you can provide transaction details for resolution.</p>
+                </li>
+                <li>
+                    <h4 onclick="toggleFaq(this)">Payment issues?</h4>
+                    <p class="faq-answer">Check your internet connection or contact support for assistance.</p>
+                </li>
+            </ul>
+
+            <h4>Terms and Conditions</h4>
+            <ul class="terms">
+                <li>Use valid credentials for account creation and keep your login details secure.</li>
+                <li>Meals are delivered within the specified window; report issues within 1 hour.</li>
+                <li>Refunds apply only to app-related service failures.</li>
+                <li>Minimal user data is collected, stored securely, and used to improve services.</li>
+                <li>Misusing the app may result in account suspension.</li>
+                <li>Adhere to hospital policies while using the app.</li>
+                <li>App may undergo maintenance; report persistent problems for resolution.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+    let selectedMeal = null;
+    const currentTime = new Date();
+    const currentHour = currentTime.getHours();
+    const currentMinute = currentTime.getMinutes();
+
+    function selectMeal(meal) {
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        document.getElementById(meal).classList.add('selected');
+        selectedMeal = meal;
+        checkMealTime(meal);
+
+        const nextButton = document.getElementById('next-button');
+        if (isTimeValid(meal)) {
+            nextButton.classList.add('active');
+            nextButton.disabled = false;
+        } else {
+            nextButton.classList.remove('active');
+            nextButton.disabled = true;
+        }
+    }
+
+    function checkMealTime(meal) {
+        let statusMessage = "";
+        const breakfastStart = 22; // 10:00 PM
+        const breakfastEnd = 5;   // 5:00 AM
+        const lunchStart = 9;     // 9:00 AM
+        const lunchEnd = 11;      // 11:00 AM
+        const dinnerStart = 15;   // 3:00 PM
+        const dinnerEnd = 17;     // 5:00 PM
+
+        if (meal === 'breakfast') {
+            statusMessage = (currentHour >= breakfastStart && currentHour < breakfastEnd)
+                ? "You can order breakfast between 10:00 PM and 5:00 AM."
+                : "Breakfast time has passed.";
+        } else if (meal === 'lunch') {
+            statusMessage = (currentHour >= lunchStart && currentHour < lunchEnd)
+                ? "You can order lunch between 9:00 AM and 11:00 AM."
+                : "Lunch time has passed.";
+        } else if (meal === 'dinner') {
+            statusMessage = (currentHour >= dinnerStart && currentHour < dinnerEnd)
+                ? "You can order dinner between 3:00 PM and 5:00 PM."
+                : "Dinner time has passed.";
+        }
+        document.getElementById(meal + "-status").innerText = statusMessage;
+    }
+
+    function isTimeValid(meal) {
+        const breakfastStart = 22; // 10:00 PM
+        const breakfastEnd = 5;   // 5:00 AM
+        const lunchStart = 9;     // 9:00 AM
+        const lunchEnd = 11;      // 11:00 AM
+        const dinnerStart = 15;   // 3:00 PM
+        const dinnerEnd = 17;     // 5:00 PM
+
+        if (meal === 'breakfast') {
+            return (currentHour >= breakfastStart && currentHour < breakfastEnd);
+        } else if (meal === 'lunch') {
+            return (currentHour >= lunchStart && currentHour < lunchEnd);
+        } else if (meal === 'dinner') {
+            return (currentHour >= dinnerStart && currentHour < dinnerEnd);
+        }
+        return false;
+    }
+
+    function nextStep() {
+        if (!selectedMeal) {
+            alert("Please select a meal.");
+            return;
+        }
+        if (isTimeValid(selectedMeal)) {
+            alert(`You selected ${selectedMeal}. Proceeding to the next page.`);
+            // Replace with your actual navigation logic
+            window.location.href = "mealtoken(4).html";
+        } else {
+            alert("The selected meal is not available at this time.");
+        }
+    }
+
+        /*let selectedMeal = null;
+        const currentTime = new Date();
+        const currentHour = currentTime.getHours();
+        const currentMinute = currentTime.getMinutes();
+
+        function selectMeal(meal) {
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            document.getElementById(meal).classList.add('selected');
+            selectedMeal = meal;
+            checkMealTime(meal);
+            const nextButton = document.getElementById('next-button');
+            if (isTimeValid(meal)) {
+                nextButton.classList.add('active');
+                nextButton.disabled = false;
+            } else {
+                nextButton.classList.remove('active');
+                nextButton.disabled = true;
+                alert(meal.charAt(0).toUpperCase() + meal.slice(1) + " time has passed.");
+            }
+        }
+
+        function checkMealTime(meal) {
+            let statusMessage = "";
+            const breakfastStart = 22;
+            const breakfastEnd = 5;
+            const lunchStart = 9;
+            const lunchEnd = 11;
+            const dinnerStart = 15;
+            const dinnerEnd = 17;
+
+            if (meal === 'breakfast') {
+                statusMessage = (currentHour >= breakfastStart || currentHour < breakfastEnd) ? "You can order breakfast between 10:00 PM and 5:00 AM." : "Breakfast time has passed.";
+            } else if (meal === 'lunch') {
+                statusMessage = (currentHour >= lunchStart && currentHour < lunchEnd) ? "You can order lunch between 9:00 AM and 11:00 AM." : "Lunch time has passed.";
+            } else if (meal === 'dinner') {
+                statusMessage = (currentHour >= dinnerStart && currentHour < dinnerEnd) ? "You can order dinner between 3:00 PM and 5:00 PM." : "Dinner time has passed.";
+            }
+            document.getElementById(meal + "-status").innerText = statusMessage;
+        }
+
+        function isTimeValid(meal) {
+            const breakfastStart = 22;
+            const breakfastEnd = 5;
+            const lunchStart = 9;
+            const lunchEnd = 11;
+            const dinnerStart = 15;
+            const dinnerEnd = 17;
+
+            if (meal === 'breakfast' && (currentHour >= breakfastStart || currentHour < breakfastEnd)) return true;
+            if (meal === 'lunch' && currentHour >= lunchStart && currentHour < lunchEnd) return true;
+            if (meal === 'dinner' && currentHour >= dinnerStart && currentHour < dinnerEnd) return true;
+            return false;
+        }
+        function nextStep() {
+            if (selectedMeal && isTimeValid(selectedMeal)) {
+                alert('You have selected: ' + selectedMeal + '. Proceeding to next step...');
+                window.location.href = 'mealtoken(4).html';
+            } else {
+                alert('You cannot proceed as the time for the selected meal has passed.');
+            }
+        }*/
+
+        function openAccountModal() {
+            document.getElementById("account-modal").style.display = "flex";
+        }
+
+        function closeAccountModal() {
+            document.getElementById("account-modal").style.display = "none";
+        }
+
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            answer.style.display = (answer.style.display === "none" || answer.style.display === "") ? "block" : "none";
+        }
+
+        function logout() {
+            if (confirm("Are you sure you want to log out?")) {
+                alert("Logged out successfully.");
+                window.location.href = "login.html";
+            }
+        }
+    </script>
+</body>
+</html>

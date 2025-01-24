@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Token System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .room-input-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .token-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .token-btn {
+            padding: 15px 30px;
+            cursor: pointer;
+            border-radius: 5px;
+            color: white;
+            border: none;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .green { background-color: green; }
+        .red { background-color: red; }
+        .blue { background-color: blue; }
+        .yellow { background-color: yellow; color: black; }
+        .orange { background-color: orange; }
+        .purple { background-color: purple; }
+        .pink { background-color: pink; }
+
+        .menu {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .menu-item {
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .button-container {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Meal Token System</h1>
+    </header>
+
+    <div class="container">
+        <!-- Room Number Input -->
+        <div class="room-input-container">
+            <p>Enter your room/ward number:</p>
+            <input type="text" id="room-input" placeholder="Enter Room No.">
+            <button onclick="displayRoomNumber()">Submit</button>
+        </div>
+
+        <!-- Token Selection -->
+        <div class="token-selection" id="token-selection" style="display: none;">
+            <button class="token-btn green" onclick="selectToken('green')">Green (Adult with general nutrition)</button>
+            <button class="token-btn red" onclick="selectToken('red')">Red (Diabetic friendly diet)</button>
+            <button class="token-btn blue" onclick="selectToken('blue')">Blue (Kid-friendly diet)</button>
+            <button class="token-btn yellow" onclick="selectToken('yellow')">Yellow (High protein diet)</button>
+            <button class="token-btn orange" onclick="selectToken('orange')">Orange (Elderly friendly diet)</button>
+            <button class="token-btn purple" onclick="selectToken('purple')">Purple (Liquid diet)</button>
+            <button class="token-btn pink" onclick="selectToken('pink')">Pink (Jain food)</button>
+        </div>
+
+        <div id="menu" class="menu">
+            <h2>Your Selected Meal</h2>
+            <div id="meal-details"></div>
+            <div class="button-container">
+                <button onclick="goBack()">Back</button>
+                <button id="next-btn" onclick="nextStep()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedToken = "";
+        let selectedMeal = "";
+        let roomNumber = "";
+        let isMealDisplayed = false;
+
+        // Function to display entered room number
+        function displayRoomNumber() {
+            roomNumber = document.getElementById("room-input").value;
+            if (roomNumber) {
+                document.getElementById("token-selection").style.display = 'block';  // Show token selection buttons
+            } else {
+                alert("Please enter a valid room number.");
+            }
+        }
+
+        // Function to handle token selection
+        function selectToken(token) {
+            selectedToken = token;
+            document.getElementById("menu").style.display = 'block';
+            displayMealOptions();
+        }
+
+        // Function to go back
+        function goBack() {
+            document.getElementById("menu").style.display = 'none';
+            document.getElementById("token-selection").style.display = 'block';  // Show token selection again
+        }
+
+        // Function to display meal options based on selected token
+        function displayMealOptions() {
+            let mealMenu = "";
+
+            // Token-specific meal options
+            if (selectedToken === 'green') {
+                mealMenu = getGreenTokenMenu();
+            } else if (selectedToken === 'red') {
+                mealMenu = getRedTokenMenu();
+            } else if (selectedToken === 'blue') {
+                mealMenu = getBlueTokenMenu();
+            } else if (selectedToken === 'yellow') {
+                mealMenu = getYellowTokenMenu();
+            } else if (selectedToken === 'orange') {
+                mealMenu = getOrangeTokenMenu();
+            } else if (selectedToken === 'purple') {
+                mealMenu = getPurpleTokenMenu();
+            } else if (selectedToken === 'pink') {
+                mealMenu = getPinkTokenMenu();
+            }
+
+            // Display selected meal options
+            selectedMeal = "lunch";  // Set a default meal option for now
+            document.getElementById("meal-details").innerHTML = mealMenu[selectedMeal] || "No menu available.";
+            document.getElementById("next-btn").innerText = "Pay at next step";  // Change the button text to "Pay at next step"
+            isMealDisplayed = true;
+        }
+
+        // Menu definitions based on token types
+        function getGreenTokenMenu() {
+            return {
+                breakfast: "Vegetable Poha, Seasonal Fruit, Milk Tea (with Sugar Sachet)",
+                lunch: "Roti, Steamed Rice, Dal, Seasonal Vegetable, Curd, Cucumber Salad",
+                dinner: "Roti, Steamed Rice, Dal, Seasonal Vegetable, Cucumber Salad"
+            };
+        }
+
+        function getRedTokenMenu() {
+            return {
+                breakfast: "Multigrain Dosa, Mint Chutney, Milk Tea",
+                lunch: "Bajra Roti, Low Sodium Vegetable, Curd, Dal, Brown Rice, Cucumber Salad",
+                dinner: "Bajra Roti, Low Sodium Vegetable, Curd, Dal, Brown Rice, Cucumber Salad"
+            };
+        }
+
+        function getBlueTokenMenu() {
+            return {
+                breakfast: "Mini Idli, Sambhar, Plain Milk (with Sugar Sachet)",
+                lunch: "Roti, Steamed Rice, Dal, Seasonal Vegetable, Curd, Cucumber Salad",
+                dinner: "Roti, Steamed Rice, Dal, Seasonal Vegetable, Cucumber Salad"
+            };
+        }
+
+        function getYellowTokenMenu() {
+            return {
+                breakfast: "Multigrain Dosa, Mint Chutney, Milk Tea",
+                lunch: "Roti, Steamed Rice, Dal, Paneer, Cucumber Salad",
+                dinner: "Roti, Steamed Rice, Dal, Paneer, Cucumber Salad"
+            };
+        }
+
+        function getOrangeTokenMenu() {
+            return {
+                breakfast: "Upma, Seasonal Fruit, Milk Tea (with Sugar Sachet)",
+                lunch: "Soft Khichdi, Curd, Cucumber Salad, Pickle",
+                dinner: "Vegetable Dalia, Cucumber Salad, Pickle"
+            };
+        }
+
+        function getPurpleTokenMenu() {
+            return {
+                breakfast: "Moong Dal Soup, Milk Tea (with Sugar Sachet)",
+                lunch: "Masoor Dal Soup, Unsweetened Nimbu Pani",
+                dinner: "Spinach Soup, Jeera Water"
+            };
+        }
+
+        function getPinkTokenMenu() {
+            return {
+                breakfast: "Vegetable Poha, Seasonal Fruit, Milk Tea (with Sugar Sachet)",
+                lunch: "Roti, Steamed Rice, Dal, Seasonal Vegetable, Cucumber Salad",
+                dinner: "Roti, Steamed Rice, Dal, Seasonal Vegetable, Cucumber Salad"
+            };
+        }
+
+        function nextStep() {
+            if (isMealDisplayed) {
+                // Redirect to the payment(5).html page
+                window.location.href = 'payment(5).html';  // Update the path if the file is located in a different folder
+            } else {
+                alert('Please select your meal first.');
+            }
+        }
+    </script>
+</body>
+</html>
